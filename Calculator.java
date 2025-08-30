@@ -1,5 +1,4 @@
 import java.util.Scanner;
-import java.util.InputMismatchException;
 import java.util.NoSuchElementException;
 
 public class Calculator {
@@ -10,16 +9,31 @@ public class Calculator {
         Scanner sc = new Scanner(System.in);
 
         try {
+            // Try interactive mode
             System.out.println("===== Simple Calculator =====");
             System.out.print("Enter first number: ");
-            num1 = sc.nextInt();
+            if (sc.hasNextInt()) {
+                num1 = sc.nextInt();
+            } else {
+                throw new NoSuchElementException();
+            }
 
             System.out.print("Enter second number: ");
-            num2 = sc.nextInt();
+            if (sc.hasNextInt()) {
+                num2 = sc.nextInt();
+            } else {
+                throw new NoSuchElementException();
+            }
 
             System.out.print("Choose an operation (+, -, *, /): ");
-            op = sc.next().charAt(0);
-        } catch (NoSuchElementException | IllegalStateException e) {
+            if (sc.hasNext()) {
+                op = sc.next().charAt(0);
+            } else {
+                throw new NoSuchElementException();
+            }
+
+        } catch (NoSuchElementException e) {
+            // Jenkins (no input) → fallback to defaults
             System.out.println("⚠️ No input detected — using default values (5 + 3)");
             num1 = 5;
             num2 = 3;
