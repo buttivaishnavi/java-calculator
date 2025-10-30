@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     tools {
-        jdk 'JDK21'     // Use the exact name from Jenkins config
-        maven 'Maven3'  // Must match your Maven tool name
+        jdk 'JDK21'     // Name exactly as configured in Manage Jenkins → Tools
+        maven 'Maven3'  // Name exactly as configured in Manage Jenkins → Tools
     }
 
     stages {
@@ -15,25 +15,31 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                script {
-                    bat 'mvn clean install'
+                dir('java-calculator') {   // 👈 Run Maven inside the correct folder
+                    script {
+                        bat 'mvn clean install'
+                    }
                 }
             }
         }
 
         stage('Build & Test') {
             steps {
-                script {
-                    bat 'mvn package'
-                    bat 'mvn test'
+                dir('java-calculator') {   // 👈 Same folder
+                    script {
+                        bat 'mvn package'
+                        bat 'mvn test'
+                    }
                 }
             }
         }
 
         stage('Archive Artifact') {
             steps {
-                junit 'target/surefire-reports/*.xml'
-                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+                dir('java-calculator') {   // 👈 Same folder
+                    junit 'target/surefire-reports/*.xml'
+                    archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+                }
             }
         }
     }
@@ -47,3 +53,4 @@ pipeline {
         }
     }
 }
+
