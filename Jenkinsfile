@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     tools {
-        jdk 'C:\Program Files\Microsoft\jdk-21.0.8.9-hotspot'
-        maven 'Maven3'
+        jdk 'JDK21'     // Use the exact name from Jenkins config
+        maven 'Maven3'  // Must match your Maven tool name
     }
 
     stages {
@@ -12,6 +12,7 @@ pipeline {
                 checkout scm
             }
         }
+
         stage('Install Dependencies') {
             steps {
                 script {
@@ -19,6 +20,7 @@ pipeline {
                 }
             }
         }
+
         stage('Build & Test') {
             steps {
                 script {
@@ -27,11 +29,21 @@ pipeline {
                 }
             }
         }
+
         stage('Archive Artifact') {
             steps {
                 junit 'target/surefire-reports/*.xml'
                 archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
             }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Build and archive completed successfully!'
+        }
+        failure {
+            echo '❌ Build failed. Please check logs.'
         }
     }
 }
